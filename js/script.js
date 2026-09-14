@@ -1,7 +1,7 @@
 function renderProjectArt(project, detail = false) {
   if (project.hideArt) return "";
   if (project.images?.length) {
-    return `<div class="project-image-frame${project.images.length === 1 ? " project-image-single" : ""}${project.imageFit === "contain" ? " project-image-contain" : ""}${detail ? " project-image-detail reveal" : ""}">
+    return `<div class="project-image-frame${project.images.length === 1 ? " project-image-single" : ""}${project.imageFit === "contain" ? " project-image-contain" : ""}${project.imageLayout === "portrait" ? " project-image-portrait" : ""}${project.imageFocus ? ` project-photo-${project.imageFocus}` : ""}${detail ? " project-image-detail reveal" : ""}">
       ${project.images.map((image) => `<img src="${image.src}" alt="${image.alt}" width="${image.width || 1280}" height="${image.height || 720}" loading="lazy" />`).join("")}
     </div>`;
   }
@@ -121,6 +121,7 @@ if (page && window.PROJECTS) {
         <div class="tags">${p.tags.map((t) => `<span>${t}</span>`).join("")}</div>
       </div>
 
+      ${p.videoId && p.images?.length ? renderProjectArt(p, true) : ""}
       ${
         p.videoId
           ? `

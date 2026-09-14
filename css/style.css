@@ -825,3 +825,45 @@ img { max-width: 100%; display: block; }
   margin-left: 0;
   object-fit: contain;
 }
+
+.project-image-portrait img {
+  width: 100%;
+  margin-left: 0;
+  object-position: center 32%;
+}
+
+.project-image-portrait.project-image-detail {
+  aspect-ratio: auto;
+  height: clamp(360px, 75vh, 760px);
+  background: var(--bg-soft);
+}
+
+.project-image-portrait.project-image-detail img {
+  object-fit: contain;
+  object-position: center;
+}
+
+/* Fill the existing card frame, with the crop focused on each product. */
+.project-photo-irrigation:not(.project-image-detail) img,
+.project-photo-rack-v3:not(.project-image-detail) img,
+.project-photo-rack-v2:not(.project-image-detail) img {
+  width: 100%;
+  margin-left: 0;
+  object-fit: cover;
+}
+
+.project-photo-irrigation:not(.project-image-detail) img { object-position: 50% 32%; }
+.project-photo-rack-v3:not(.project-image-detail) img { object-position: 50% 58%; }
+.project-photo-rack-v2:not(.project-image-detail) img { object-position: 50% 66%; }
+
+/* Full photographs remain available on the detail page without cropping. */
+.project-photo-rack-v3.project-image-detail {
+  aspect-ratio: 4 / 3;
+  background: var(--bg-soft);
+}
+
+.project-photo-rack-v3.project-image-detail img {
+  width: 100%;
+  margin-left: 0;
+  object-fit: contain;
+}
