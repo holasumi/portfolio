@@ -1,12 +1,13 @@
-/* ============================================================
-   Project data — single source of truth.
-   Used by index.html (project grid) and project.html (detail page).
-   ============================================================ */
-
 window.PROJECTS = [
   {
     slug: "acid-rain-digital-twin",
-    title: "Acid Rain Digital Twin",
+    resource: {"url": "https://a360.co/4Abb5n6", "label": "View 3D model on Autodesk", "description": "Explore the project’s 3D design in the Autodesk viewer. The model documents the physical design associated with the acid rain digital twin research."},
+    title: "Digital Twin",
+    images: [
+      { src: "assets/digital-twin-1.png", alt: "Digital Twin enclosure — front view with door closed" },
+      { src: "assets/digital-twin-2.png", alt: "Digital Twin enclosure — internal components with door open" },
+      { src: "assets/digital-twin-3.png", alt: "Digital Twin enclosure — rear view" },
+    ],
     date: "Dec 2025 — Present",
     status: "Ongoing",
     role: "Researcher — hardware & 3D design",
@@ -30,6 +31,8 @@ window.PROJECTS = [
   },
   {
     slug: "smart-irrigation",
+    resource: {"url": "https://youtu.be/b9oeM8eas1g", "label": "Watch irrigation demonstration", "description": "Watch the Smart Irrigation System demonstration alongside the system overview and hardware contributions below."},
+    videoId: "b9oeM8eas1g",
     title: "Smart Irrigation System",
     date: "Sept 2025 — Jan 2026",
     status: "Completed",
@@ -77,6 +80,8 @@ window.PROJECTS = [
   },
   {
     slug: "weapon-rack-v2",
+    resource: {"url": "https://youtu.be/5cux0I_ca80", "label": "Watch V2 demonstration", "description": "This video documents Automation Weapon Rack V2, the second-generation storage project described here."},
+    videoId: "5cux0I_ca80",
     title: "Automated Weapon Rack V2",
     date: "Jul 2023 — Oct 2024",
     status: "Completed · Deployed",
@@ -101,6 +106,10 @@ window.PROJECTS = [
   },
   {
     slug: "driver-behavior-detection",
+    images: [
+      { src: "assets/driver-behavior-detection-transparent.png", alt: "Driver Behavior Detection camera monitoring and session history dashboards", width: 2000, height: 1414 },
+    ],
+    resource: {"url": "https://holasumi.github.io/driver.BehaviorDetection/", "label": "Open Driver Behavior Detection", "description": "Explore the published Driver Behavior Detection website for the project’s web presentation, alongside the detection pipeline described here."},
     title: "Driver Behavior Detection",
     date: "Sept 2024",
     status: "Completed",
@@ -112,7 +121,7 @@ window.PROJECTS = [
     stack: ["Python", "Computer vision", "Real-time video processing"],
     overview: [
       "A Python-based system that watches the driver — not the road — and flags risky behavior in real time, built for road-safety analysis.",
-      "The system detects driver drowsiness, phone use while driving, and reads the driver's facial expressions, turning a camera feed into an assessment of the driver's state. This project is closest to my interest in AI agents: software that perceives its environment and reacts to it.",
+      "The system detects driver drowsiness, phone use while driving, and reads the driver's facial expressions, turning a camera feed into an assessment of the driver's state.",
     ],
     highlights: [
       "Built the full detection pipeline in Python",
@@ -124,6 +133,10 @@ window.PROJECTS = [
   },
   {
     slug: "analog-line-follower",
+    resource: {
+      url: "https://drive.google.com/drive/folders/1dhW0Tey0PbjlSfqXd2vV5KnC_GsFIjoT?usp=drive_link",
+      label: "View project references on Google Drive",
+    },
     title: "Analog Line Follower",
     date: "Jun 2023",
     status: "Completed",
@@ -147,7 +160,9 @@ window.PROJECTS = [
   },
   {
     slug: "auto-lighting-ldr",
-    title: "Auto Lighting with LDR",
+    resource: {"url": "https://youtu.be/7jdUyByKyb0", "label": "Watch lighting demonstration", "description": "Watch the Automatic Lighting Circuit with LDR Sensor demonstration, documenting the sensor-driven lighting project."},
+    videoId: "7jdUyByKyb0",
+    title: "Automatic Lighting Circuit with LDR Sensor",
     date: "Jan 2023",
     status: "Completed",
     role: "Designer & builder",

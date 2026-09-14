@@ -1,18 +1,20 @@
-/* ============================================================
-   Sakinah Farah Agnia — Portfolio scripts
-   Shared by index.html and project.html (features are guarded).
-   ============================================================ */
+function renderProjectArt(project, detail = false) {
+  if (project.hideArt) return "";
+  if (project.images?.length) {
+    return `<div class="project-image-frame${project.images.length === 1 ? " project-image-single" : ""}${project.imageFit === "contain" ? " project-image-contain" : ""}${detail ? " project-image-detail reveal" : ""}">
+      ${project.images.map((image) => `<img src="${image.src}" alt="${image.alt}" width="${image.width || 1280}" height="${image.height || 720}" loading="lazy" />`).join("")}
+    </div>`;
+  }
+  return `<div class="wire-art${detail ? " proj-art reveal" : ""}"><svg viewBox="0 0 200 120" aria-hidden="true">${project.art}</svg></div>`;
+}
 
-const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-// ---------- projects carousel (index.html) ----------
 const carousel = document.getElementById("carousel");
 
 if (carousel && window.PROJECTS) {
   carousel.innerHTML = PROJECTS.map(
     (p) => `
     <a class="project-card" href="project.html?id=${p.slug}">
-      <div class="wire-art"><svg viewBox="0 0 200 120" aria-hidden="true">${p.art}</svg></div>
+      ${renderProjectArt(p)}
       <h3>${p.title}</h3>
       <p>${p.blurb}</p>
       <div class="tags">${p.tags.map((t) => `<span>${t}</span>`).join("")}</div>
@@ -20,20 +22,18 @@ if (carousel && window.PROJECTS) {
         <span>${p.date}</span>
         <span class="view">view details →</span>
       </div>
-    </a>`
+    </a>`,
   ).join("");
 
   const dotsWrap = document.getElementById("carouselDots");
   const firstCard = carousel.querySelector(".project-card");
-  const GAP = 18; // must match the CSS grid gap
+  const GAP = 18;
 
   const step = () => firstCard.offsetWidth + GAP;
   const maxScroll = () => carousel.scrollWidth - carousel.clientWidth;
 
   let dots = [];
 
-  // One dot per scroll position that actually exists at the current
-  // viewport width — recomputed on resize, so dots always match reality.
   function buildDots() {
     const pages = maxScroll() > 1 ? Math.round(maxScroll() / step()) + 1 : 1;
     dotsWrap.innerHTML = "";
@@ -41,7 +41,10 @@ if (carousel && window.PROJECTS) {
       const dot = document.createElement("button");
       dot.setAttribute("aria-label", `Go to project page ${i + 1}`);
       dot.addEventListener("click", () => {
-        carousel.scrollTo({ left: Math.min(i * step(), maxScroll()), behavior: "smooth" });
+        carousel.scrollTo({
+          left: Math.min(i * step(), maxScroll()),
+          behavior: "smooth",
+        });
       });
       dotsWrap.appendChild(dot);
     }
@@ -63,7 +66,6 @@ if (carousel && window.PROJECTS) {
   buildDots();
 }
 
-// ---------- project detail page (project.html) ----------
 const page = document.getElementById("projectPage");
 
 if (page && window.PROJECTS) {
@@ -80,7 +82,7 @@ if (page && window.PROJECTS) {
         ${PROJECTS.map(
           (p) => `
         <a class="project-card" href="project.html?id=${p.slug}">
-          <div class="wire-art"><svg viewBox="0 0 200 120" aria-hidden="true">${p.art}</svg></div>
+          ${renderProjectArt(p)}
           <h3>${p.title}</h3>
           <p>${p.blurb}</p>
           <div class="tags">${p.tags.map((t) => `<span>${t}</span>`).join("")}</div>
@@ -88,13 +90,22 @@ if (page && window.PROJECTS) {
             <span>${p.date}</span>
             <span class="view">view details →</span>
           </div>
-        </a>`
+        </a>`,
         ).join("")}
       </div>`;
   } else {
     const p = PROJECTS[idx];
     const prev = PROJECTS[(idx - 1 + PROJECTS.length) % PROJECTS.length];
     const next = PROJECTS[(idx + 1) % PROJECTS.length];
+
+    const videoUrl = p.videoId ? new URL(`https://www.youtube.com/embed/${p.videoId}`) : null;
+    if (videoUrl) {
+      videoUrl.searchParams.set("playsinline", "1");
+      videoUrl.searchParams.set("controls", "1");
+      if (["http:", "https:"].includes(location.protocol)) {
+        videoUrl.searchParams.set("origin", location.origin);
+      }
+    }
 
     document.title = `${p.title} — Sakinah Farah Agnia`;
     page.innerHTML = `
@@ -110,9 +121,17 @@ if (page && window.PROJECTS) {
         <div class="tags">${p.tags.map((t) => `<span>${t}</span>`).join("")}</div>
       </div>
 
-      <div class="wire-art proj-art reveal">
-        <svg viewBox="0 0 200 120" aria-hidden="true">${p.art}</svg>
-      </div>
+      ${
+        p.videoId
+          ? `
+        <figure class="project-media reveal">
+          <iframe src="${videoUrl.href}"
+            title="${p.title} — project demonstration" loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </figure>`
+          : renderProjectArt(p, true)
+      }
 
       <div class="proj-cols">
         <div class="proj-main reveal">
@@ -134,6 +153,7 @@ if (page && window.PROJECTS) {
               <dt>Status</dt><dd>${p.status}</dd>
             </dl>
           </div>
+          ${p.resource && !p.videoId ? `<a class="btn btn-ghost" href="${p.resource.url}" target="_blank" rel="noopener noreferrer">${p.resource.label} ↗</a>` : ""}
           <a class="btn btn-primary" href="index.html#contact">Ask me about this ↗</a>
         </aside>
       </div>
@@ -146,39 +166,6 @@ if (page && window.PROJECTS) {
   }
 }
 
-// ---------- typing effect (index.html hero) ----------
-const typedEl = document.getElementById("typed");
-
-if (typedEl) {
-  const WORDS = ["cyber security (pentesting)", "AI automation", "AI agents", "IoT & embedded systems", "research & development"];
-
-  if (reduceMotion) {
-    typedEl.textContent = WORDS.join(" · ");
-  } else {
-    let wordIdx = 0;
-    let charIdx = 0;
-    let deleting = false;
-
-    (function typeTick() {
-      const word = WORDS[wordIdx];
-      charIdx += deleting ? -1 : 1;
-      typedEl.textContent = word.slice(0, charIdx);
-
-      let delay = deleting ? 40 : 85;
-      if (!deleting && charIdx === word.length) {
-        delay = 1800;
-        deleting = true;
-      } else if (deleting && charIdx === 0) {
-        deleting = false;
-        wordIdx = (wordIdx + 1) % WORDS.length;
-        delay = 350;
-      }
-      setTimeout(typeTick, delay);
-    })();
-  }
-}
-
-// ---------- reveal on scroll ----------
 const revealObserver = new IntersectionObserver(
   (entries) => {
     entries.forEach((entry) => {
@@ -188,54 +175,70 @@ const revealObserver = new IntersectionObserver(
       }
     });
   },
-  { threshold: 0.12 }
+  { threshold: 0.12 },
 );
 
-document.querySelectorAll(".reveal").forEach((el) => revealObserver.observe(el));
+document
+  .querySelectorAll(".reveal")
+  .forEach((el) => revealObserver.observe(el));
 
-// ---------- active nav link while scrolling (index.html) ----------
 const navLinks = document.querySelectorAll(".nav-link[data-section]");
 
 if (navLinks.length) {
-  const sections = [...navLinks]
-    .map((link) => document.getElementById(link.dataset.section))
-    .filter(Boolean);
+  const sections = [...document.querySelectorAll(".section[id]")];
+  let scheduled = false;
 
-  const navObserver = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        navLinks.forEach((link) =>
-          link.classList.toggle("active", link.dataset.section === entry.target.id)
-        );
-      });
-    },
-    { rootMargin: "-40% 0px -55% 0px" }
-  );
+  function syncNavigation() {
+    scheduled = false;
+    const marker = Math.min(window.innerHeight * 0.35, 240);
+    let current = sections[0];
+    for (const section of sections) {
+      if (section.getBoundingClientRect().top <= marker) current = section;
+    }
+    if (
+      window.scrollY > 0 &&
+      window.scrollY + window.innerHeight >=
+        document.documentElement.scrollHeight - 2
+    ) {
+      current = sections[sections.length - 1];
+    }
+    if (!current) return;
+    const activeNav = current.id === "skills" ? "home" : current.id;
+    navLinks.forEach((link) => {
+      const active = link.dataset.section === activeNav;
+      link.classList.toggle("active", active);
+      if (active) link.setAttribute("aria-current", "location");
+      else link.removeAttribute("aria-current");
+    });
+    const hash = `#${current.id}`;
+    if (location.hash !== hash) {
+      history.replaceState(
+        history.state,
+        "",
+        `${location.pathname}${location.search}${hash}`,
+      );
+    }
+  }
 
-  sections.forEach((sec) => navObserver.observe(sec));
+  function scheduleNavigation() {
+    if (scheduled) return;
+    scheduled = true;
+    window.requestAnimationFrame(syncNavigation);
+  }
+
+  window.addEventListener("scroll", scheduleNavigation, { passive: true });
+  window.addEventListener("resize", scheduleNavigation);
+  window.addEventListener("hashchange", scheduleNavigation);
+  window.addEventListener("pageshow", scheduleNavigation);
+  if (document.readyState === "complete") scheduleNavigation();
+  else window.addEventListener("load", scheduleNavigation, { once: true });
 }
 
-// ---------- contact form (opens mail client, no backend needed) ----------
-const form = document.getElementById("contactForm");
-
-if (form) {
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const name = document.getElementById("fName").value.trim();
-    const email = document.getElementById("fEmail").value.trim();
-    const message = document.getElementById("fMsg").value.trim();
-
-    const subject = encodeURIComponent(`Portfolio contact from ${name}`);
-    const body = encodeURIComponent(`${message}\n\n— ${name} (${email})`);
-    window.location.href = `mailto:sakinah.frha@gmail.com?subject=${subject}&body=${body}`;
-  });
-}
-
-// ---------- back to top & footer year ----------
 const toTop = document.getElementById("toTop");
 if (toTop) {
-  toTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+  toTop.addEventListener("click", () =>
+    window.scrollTo({ top: 0, behavior: "smooth" }),
+  );
 }
 
 const yearEl = document.getElementById("year");
